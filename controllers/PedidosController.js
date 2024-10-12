@@ -1,16 +1,69 @@
-import express from 'express'
-const router = express.Router()
+import express from "express";
+const router = express.Router();
+import connection from "../Models/Pedido.js";
 
-router.get("/pedidos", (req,res) => {
-    const pedidos = [
-        {numero: "1001", valor: 2500},
-        {numero: "1002", valor: 600},
-        {numero: "1003", valor: 200},
-        {numero: "1004", valor: 40}
-    ]
+router.get("/pedidos", (req, res) => {
+  Pedido.findAll().then((pedidos) => {
     res.render("pedidos", {
-        pedidos : pedidos
-    })
-})
+      pedidos: pedidos,
+    });
+  });
+});
 
-export default router
+router.post("/pedidos/new", (req, res) => {
+  const numero = req.body.numero;
+  const valor = req.body.valor;
+  Pedido.create({
+    numero: numero,
+    valor: valor,
+  }).then(() => {
+    res.redirect("/pedidos");
+  });
+});
+
+router.get("/pedidos/delete/:id", (req, res) => {
+  const id = req.params.id;
+  Pedido.destroy({
+    where: {
+      id: id,
+    },
+  })
+    .then(() => {
+      res.redirect("/pedidos");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+router.get("/pedidos/edit/:id", (req, res) => {
+  Pedido.findByPk(id)
+    .then((pedido) => {
+      res.render("pedidoEdit", {
+        pedido: pedido,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+router.post("/pedidos/update", (req, res) => {
+  const id = req.body.id;
+  const numero = req.body.numero;
+  const valor = req.body.valor;
+  Pedido.update(
+    {
+      numero: numero,
+      valor: valor,
+    },
+    { where: { id: id } }
+  )
+    .then(() => {
+      res.redirect("/pedidos");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+export default router;

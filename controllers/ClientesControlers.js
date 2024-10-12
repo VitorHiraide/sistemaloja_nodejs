@@ -1,15 +1,75 @@
-import express from 'express'
-const router = express.Router()
+import express from "express";
+const router = express.Router();
+import Cliente from "../Models/Cliente.js";
 
-router.get("/clientes", (req, res) => {
-    const clientes = [
-        {nome: "Felipe Mendes", cpf: " 888.999.000-88", endereco: "Rua das Acácias, 22 - Jardim das Pedras, Porto Alegre - RS "},
-        {nome: "Carlos Pereira", cpf: "987.654.321-11", endereco: "Avenida Central, 200 - Centro, Rio de Janeiro - RJ"},
-        {nome: "João Santos", cpf: "111.222.333-44", endereco: "Rua do Mar, 78 - Vila dos Ventos, Salvador - BA"},
-        {nome: "Rafael Costa",cpf: " 222.333.444-55", endereco: "Avenida das Palmeiras, 300 - Praia do Forte, Natal - RN"}
-    ]
+router.get("/clientes", function (req, res) {
+  Cliente.findAll().then((clientes) => {
     res.render("clientes", {
-        clientes : clientes
+      clientes: clientes,
+    });
+  });
+});
+
+router.post("/clientes/new", (req, res) => {
+  const nome = req.body.nome;
+  const cpf = req.body.cpf;
+  const endereco = req.body.endereco;
+  Cliente.create({
+    nome: nome,
+    cpf: cpf,
+    endereco: endereco,
+  }).then(() => {
+    console.redirect("/clientes");
+  });
+});
+
+router.get("/clientes/delete/:id", (req, res) => {
+  const id = req.params.id;
+  Cliente.destroy({
+    where: {
+      id: id,
+    },
+  })
+    .then(() => {
+      res.redirect("/clientes");
     })
-})
- export default router
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+router.get("/clientes/edit/:id", (req, res) => {
+  const id = req.params.id;
+  Cliente.findByPk(id)
+    .then((cliente) => {
+      res.render("clienteEdit", {
+        cliente: cliente,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+router.get("/clientes/update", (req, res) => {
+  const id = req.body.id;
+  const nome = req.body.nome;
+  const cpf = req.body.cpf;
+  const endereco = req.body.endereco;
+  Cliente.update(
+    {
+      nome: nome,
+      cpf: cpf,
+      endereco: endereco,
+    },
+    { where: { id: id } }
+  )
+    .then(() => {
+      res.redirect("/clientes");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+export default router;
