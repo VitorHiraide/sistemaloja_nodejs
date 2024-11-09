@@ -1,4 +1,4 @@
-import Sequelize from "sequelize";
+import { Sequelize } from "sequelize";
 
 const connection = new Sequelize({
     dialect: "mysql",

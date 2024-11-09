@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import connection from "../Models/Pedido.js";
+import Pedido from "../Models/Pedido.js";
 
 router.get("/pedidos", (req, res) => {
   Pedido.findAll().then((pedidos) => {

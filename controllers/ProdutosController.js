@@ -1,5 +1,6 @@
 import express from "express";
 const router = express.Router();
+import Produto from "../Models/Produto.js"
 
 router.get("/produtos", (req, res) => {
   Produto.findAll().then((produtos) => {
