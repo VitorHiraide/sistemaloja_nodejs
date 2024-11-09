@@ -6,12 +6,23 @@ import bcrypt from "bcrypt";
 
 // ROTA DE LOGIN
 router.get("/login", (req, res) => {
-  res.render("login");
+  res.render("login", {
+    loggedOut: true,
+    messages: req.flash()
+  });
 });
+
+router.get("/logout", (req, res) => {
+    req.session.user = undefined;
+    res.redirect("/")
+})
 
 // ROTA DE CADASTRO
 router.get("/cadastro", (req, res) => {
-  res.render("cadastro");
+  res.render("cadastro", {
+    loggedOut: true,
+    messages: req.flash()
+  });
 });
 
 // ROTA DE CRIAÇÃO DE USUÁRIO
@@ -60,19 +71,20 @@ router.post("/authenticate", (req, res) => {
           id: user.id,
           email: user.email
         }
-        res.send(`Usuário logado:<br>
-          ID: ${req.session.user['id']}<br>
-          E-mail: ${req.session.user['email']}`)
-        // res.redirect("/");
+        // res.send(`Usuário logado:<br>
+         // ID: ${req.session.user['id']}<br>
+         // E-mail: ${req.session.user['email']}`)
+         req.flash('success', "Login efetuado com sucesso!")
+         res.redirect("/");
         // SE A SENHA NÃO FOR VÁLIDA
       } else {
-        res.send(`Senha inválida!<br>
-                <a href="/login">Tente novamente!</a>`);
+        req.flash('danger', "A senha informada está incorreta! Tente novamente.")
+        res.redirect("/login")
       }
     } else {
       // SE O USÁRIO NÃO EXISTE
-      res.send(`Usuário não cadastrado.<br>
-            <a href="/login">Tente novamente!</a>`);
+      req.flash('danger', "O usuário informado não existe! Verifique os dados digitados.")
+      res.redirect("/login")
     }
   });
 });

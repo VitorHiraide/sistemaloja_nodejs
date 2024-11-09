@@ -8,8 +8,18 @@ import PedidosController from "./controllers/PedidosController.js";
 import UsersController from "./controllers/UsersController.js";
 import session from "express-session";
 
-app.set("view engine", "ejs");
+import Auth from "./middleware/Auth.js"
 
+import flash from "express-flash"
+
+app.set("view engine", "ejs");
+app.use(flash())
+app.use(session({
+  secret: "lojasecret",
+  cookie: {maxAge: 360000},
+  saveUninitialized: false,
+  resave: false
+}))
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 
@@ -36,8 +46,10 @@ app.use("/", ProdutosController);
 app.use("/", PedidosController);
 app.use("/", UsersController);
 
-app.get("/", (req, res) => {
-  res.render("index");
+app.get("/",Auth, (req, res) => {
+  res.render("index", {
+    messages: req.flash()
+  })
 });
 
 const port = 8080;
